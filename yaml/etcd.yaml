@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: etcd
+  labels:
+    app: etcd
+spec:
+  serviceName: etcd
+  selector:
+    matchLabels:
+      app: etcd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: etcd
+    spec:
+      containers:
+        - name: etcd
+          image: gcr.io/etcd-development/etcd:v3.3.4
+          command:
+            - "/usr/local/bin/etcd"
+          args:
+            - "--advertise-client-urls=http://0.0.0.0:2379"
+            - "--data-dir=/var/lib/etcd"
+            - "--name=etcd0"
+            - "--listen-client-urls=http://0.0.0.0:2379"
+            - "--listen-peer-urls=http://0.0.0.0:2380"
+            - "--initial-cluster-state=new"
+            - "--initial-advertise-peer-urls=http://0.0.0.0:2380"
+            - "--initial-cluster"
+            - "etcd0=http://0.0.0.0:2380"
+            - "--initial-cluster-token=events"
+          volumeMounts:
+            - name: etcd-data
+              mountPath: /var/lib/etcd
+  volumeClaimTemplates:
+    - metadata:
+        name: etcd-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+spec:
+  ports:
+    - name: etcd
+      port: 2379
+  selector:
+    app: etcd

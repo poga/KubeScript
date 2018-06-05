@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kubescript-base
+  labels:
+    app: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web
+        tier: frontend
+        builtWith: kubescript
+    spec:
+      containers:
+      - name: base
+        image: ''
+        # This setting makes nodes pull the docker image every time before
+        # starting the pod. This is useful when debugging, but should be turned
+        # off in production.
+        imagePullPolicy: Always
+        ports:
+        - name: http-server
+          containerPort: 3000
