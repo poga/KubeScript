@@ -2,9 +2,12 @@ const Koa = require('koa')
 const Router = require('koa-router')
 const request = require('request-promise')
 
-const EVENT_GATEWAY_HOST = 'event-gateway'
+const DEFAULT_EVENT_GATEWAY_HOST = 'event-gateway'
 
-function Runner () {
+function Runner (eventGatewayHost) {
+  if (!eventGatewayHost) eventGatewayHost = DEFAULT_EVENT_GATEWAY_HOST
+
+  this.EG = eventGatewayHost
   this.router = new Router()
 }
 
@@ -51,7 +54,7 @@ Runner.prototype.delete = function (path, handler) {
 Runner.prototype.emit = async function (event, payload) {
   await request({
     method: 'POST',
-    uri: `http://${EVENT_GATEWAY_HOST}:4000/`,
+    uri: `http://${this.EG}:4000/`,
     headers: {
       Event: event
     },
@@ -65,10 +68,10 @@ Runner.prototype.run = function () {
   this.app = app
 
   app
-    .use(this.router.route())
+    .use(this.router.routes())
     .use(this.router.allowedMethods())
 
-  app.listen(3000)
+  return app.listen(3000)
 }
 
 module.exports = Runner
