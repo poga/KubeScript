@@ -3,6 +3,7 @@ const Router = require('koa-router')
 const logger = require('koa-logger')
 const cors = require('@koa/cors')
 const request = require('request-promise')
+const bodyParser = require('koa-bodyparser')
 
 const { assertNotAnonymous } = require('./assert')
 
@@ -64,6 +65,7 @@ Runner.prototype.run = function () {
   app
     .use(cors())
     .use(logger())
+    .use(bodyParser())
     .use(async (ctx, next) => {
       await next()
       let body = ctx.body
