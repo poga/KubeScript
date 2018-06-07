@@ -145,9 +145,11 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   // // * setup app pods & services
   // // deploy app
-  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.yaml')])
+  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.yaml')} > ${path.join(out, 'app.injected.yaml')}`])
+  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.injected.yaml')])
   await spawn('kubectl', ['rollout', 'status', `deploy/${packageData.name}`])
-  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.yaml')])
+  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.service.yaml')} > ${path.join(out, 'app.service.injected.yaml')}`])
+  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.injected.yaml')])
 
   // setup event-gateway
   // get event-gateway external IP
