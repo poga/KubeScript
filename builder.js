@@ -4,7 +4,7 @@ const path = require('path')
 
 // setup require hook
 const reqhack = require('./requireHack')
-const packageData = require('./package.json')
+const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
 reqhack.register(packageData)
 
 const Events = require('./events')

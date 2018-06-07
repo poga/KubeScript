@@ -1,17 +1,20 @@
 {
-  "name": "kubescript-app-builder",
-  "version": "1.0.0",
+  "name": "kubescript",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node testApp.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "^2.2.1",
     "js-yaml": "^3.12.0",
     "koa": "^2.5.1",
+    "koa-logger": "^3.2.0",
     "koa-router": "^7.4.0",
     "lodash": "^4.17.10",
     "request": "^2.87.0",

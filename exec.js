@@ -2,10 +2,10 @@ const cp = require('child_process')
 
 module.exports = { spawn, exec }
 
-function spawn (cmd, args) {
+function spawn (cmd, args, opts) {
   console.log('exec', cmd, args.join(' '))
   return new Promise((resolve, reject) => {
-    let child = cp.spawn(cmd, args)
+    let child = cp.spawn(cmd, args, opts)
     child.stdout.pipe(process.stdout)
     child.stderr.pipe(process.stderr)
 

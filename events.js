@@ -1,4 +1,5 @@
 const request = require('request-promise')
+const { assertNotAnonymous } = require('./assert')
 
 function Events () {
   this.subscriptions = {}
@@ -9,13 +10,12 @@ Events.prototype.register = function (reg) {
   let { event, method, path, handler } = reg
   let name = handler.name
 
-  if (name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(name)
 
-  reg.name = name
+  reg.handlerName = name
+  reg.name = reg.method ? `${reg.method}-${reg.handlerName}` : reg.handlerName
 
-  this.functions[name] = reg
+  this.functions[reg.name] = reg
 
   let key = Events.getKey(event, method, path, name)
   this.subscriptions[key] = reg
@@ -66,7 +66,7 @@ Events.prototype._applyFunctions = async function (eventGatewayIP) {
         body: {
           functionId: reg.name,
           type: 'http',
-          provider: { url: `http://app/${name}` }
+          provider: { url: `http://app/${reg.name}` }
         },
         json: true
       })

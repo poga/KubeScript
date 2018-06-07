@@ -1,6 +1,10 @@
 const Koa = require('koa')
 const Router = require('koa-router')
+const logger = require('koa-logger')
+const cors = require('@koa/cors')
 const request = require('request-promise')
+
+const { assertNotAnonymous } = require('./assert')
 
 const DEFAULT_EVENT_GATEWAY_HOST = 'event-gateway'
 
@@ -12,43 +16,33 @@ function Runner (eventGatewayHost) {
 }
 
 Runner.prototype.on = function (event, handler) {
-  if (handler.name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(handler.name)
 
   this.router.post(`/${handler.name}`, handler)
 }
 
 Runner.prototype.get = function (path, handler) {
-  if (handler.name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(handler.name)
 
-  this.router.get(path, handler)
+  this.router.post(`/GET-${handler.name}`, handler)
 }
 
 Runner.prototype.post = function (path, handler) {
-  if (handler.name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(handler.name)
 
-  this.router.post(path, handler)
+  this.router.post(`/POST-${handler.name}`, handler)
 }
 
 Runner.prototype.put = function (path, handler) {
-  if (handler.name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(handler.name)
 
-  this.router.put(path, handler)
+  this.router.post(`/PUT-${handler.name}`, handler)
 }
 
 Runner.prototype.delete = function (path, handler) {
-  if (handler.name === 'anonymous') {
-    throw new Error('Anonymous function is not allowed. Please specify a name')
-  }
+  assertNotAnonymous(handler.name)
 
-  this.router.delete(path, handler)
+  this.router.post(`/DELETE-${handler.name}`, handler)
 }
 
 Runner.prototype.emit = async function (event, payload) {
@@ -68,6 +62,8 @@ Runner.prototype.run = function () {
   this.app = app
 
   app
+    .use(cors())
+    .use(logger())
     .use(this.router.routes())
     .use(this.router.allowedMethods())
 
