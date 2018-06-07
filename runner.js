@@ -64,6 +64,15 @@ Runner.prototype.run = function () {
   app
     .use(cors())
     .use(logger())
+    .use(async (ctx, next) => {
+      await next()
+      let body = ctx.body
+      let headers = ctx.response.headers
+      let statusCode = ctx.status
+      console.log('middleware', body, headers, statusCode)
+      ctx.body = JSON.stringify({ body, headers, statusCode })
+      ctx.status = 200
+    })
     .use(this.router.routes())
     .use(this.router.allowedMethods())
 
