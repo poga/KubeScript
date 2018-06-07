@@ -1,5 +1,5 @@
 const tape = require('tape')
-const reqhack = require('../requireHack')
+const reqhack = require('../require-hack')
 
 tape('require hack should ignore valid require', function (t) {
   let hook = reqhack.register(makePackageData())
