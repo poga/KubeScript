@@ -2,6 +2,18 @@ const KubeScript = require('.')
 
 let app = new KubeScript()
 
+app.on('event1', function event1Handler (ctx) {
+  console.log('event1', ctx)
+
+  app.emit('event2', { a: 'b' })
+  ctx.body = 'ok'
+})
+
+app.on('event2', function event2Handler (ctx) {
+  console.log('event2', ctx)
+  ctx.body = 'ok'
+})
+
 app.get('/foo', function fooHandler (ctx) {
   console.log(ctx)
   ctx.body = 'bar'
