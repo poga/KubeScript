@@ -1,7 +1,7 @@
 const tape = require('tape')
 const fs = require('fs')
 const path = require('path')
-const { spawn } = require('../exec')
+const { spawn } = require('../util')
 
 try {
   fs.mkdirSync(path.join(__dirname, 'temp'))

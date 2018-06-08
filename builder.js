@@ -11,7 +11,7 @@ const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package
 reqhack.register(packageData)
 
 const Events = require('./events')
-const { spawn, exec } = require('./exec')
+const { spawn, exec } = require('./util')
 
 function Builder () {
   this.events = new Events()
