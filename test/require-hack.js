@@ -23,6 +23,28 @@ tape('force hijack require with docker://', function (t) {
   t.end()
 })
 
+tape('can\'t find module', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  t.throws(() => {
+    require('foobar2')
+  })
+
+  hook.unmount()
+  t.end()
+})
+
+tape('unknown docker image', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  t.throws(() => {
+    require('docker://foobar2')
+  })
+
+  hook.unmount()
+  t.end()
+})
+
 tape('inject hook', function (t) {
   let hook = reqhack.register(makePackageData())
 

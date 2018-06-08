@@ -23,6 +23,10 @@ function register (packageData) {
       path = path.replace('docker://', '')
     }
 
+    if (!deps[path]) {
+      throw new Error(`Cannot find module '${path}'`)
+    }
+
     requiredImages.push({ serviceName: serviceName(path), image: path, spec: deps[path] })
     let src = `
       module.exports = {
