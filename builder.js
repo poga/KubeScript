@@ -64,7 +64,12 @@ Builder.prototype.run = async function (outPrefix, opts) {
   fs.copyFileSync(path.join(__dirname, 'yaml', 'conduit.yaml'), path.join(out, 'conduit.yaml'))
   fs.copyFileSync(path.join(__dirname, 'yaml', 'etcd.yaml'), path.join(out, 'etcd.yaml'))
   fs.copyFileSync(path.join(__dirname, 'yaml', 'event-gateway.yaml'), path.join(out, 'event-gateway.yaml'))
-  fs.copyFileSync(path.join(__dirname, 'yaml', 'Dockerfile'), path.join(process.cwd(), 'Dockerfile'))
+
+  if (opts.dockerfilePath) {
+    fs.copyFileSync(opts.dockerfilePath, path.join(process.cwd(), 'Dockerfile'))
+  } else {
+    fs.copyFileSync(path.join(__dirname, 'yaml', 'Dockerfile'), path.join(process.cwd(), 'Dockerfile'))
+  }
 
   // app pod
   let imagePrefix = packageData.kubescript.prefix || ''
