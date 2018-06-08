@@ -4,12 +4,19 @@ const logger = require('koa-logger')
 const cors = require('@koa/cors')
 const request = require('request-promise')
 const bodyParser = require('koa-bodyparser')
+const fs = require('fs')
+const path = require('path')
 
 const { assertNotAnonymous } = require('./assert')
 
 const DEFAULT_EVENT_GATEWAY_HOST = 'event-gateway'
 
-function Runner (eventGatewayHost) {
+// setup require hook
+const reqhack = require('./require-hack')
+const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
+reqhack.register(packageData)
+
+function Runner(eventGatewayHost) {
   if (!eventGatewayHost) eventGatewayHost = DEFAULT_EVENT_GATEWAY_HOST
 
   this.EG = eventGatewayHost
@@ -71,7 +78,6 @@ Runner.prototype.run = function () {
       let body = ctx.body
       let headers = ctx.response.headers
       let statusCode = ctx.status
-      console.log('middleware', body, headers, statusCode)
       ctx.body = JSON.stringify({ body, headers, statusCode })
       ctx.status = 200
     })
