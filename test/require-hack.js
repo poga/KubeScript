@@ -9,6 +9,7 @@ tape('require hack should ignore valid require', function (t) {
   })
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -19,6 +20,7 @@ tape('require hack should prioritize npm module', function (t) {
   t.notOk(m.spec)
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -29,6 +31,7 @@ tape('require hack should prioritize devDependencies', function (t) {
   t.notOk(m.spec)
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -39,6 +42,7 @@ tape('require hack can be forced to require docker image with docker://', functi
   t.notOk(m.spec)
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -50,6 +54,7 @@ tape('force hijack require with docker://', function (t) {
   })
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -61,6 +66,7 @@ tape('can\'t find module', function (t) {
   })
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -72,6 +78,7 @@ tape('unknown docker image', function (t) {
   })
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -79,9 +86,25 @@ tape('inject hook', function (t) {
   let hook = reqhack.register(makePackageData())
 
   let foobar = require('foobar')
-  t.same(foobar, { serviceName: 'foobar', image: 'foobar', spec: { spec: 1234 } })
+  t.same(foobar, { port: 80, host: 'foobar', image: 'foobar', spec: { spec: 1234 } })
 
   hook.unmount()
+  reqhack.clear()
+  t.end()
+})
+
+tape('require twice', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  require('foobar')
+  require('foobar')
+
+  t.same(reqhack.registerList(), [
+    { serviceName: 'foobar', image: 'foobar', spec: { spec: 1234 } }
+  ])
+
+  hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
@@ -90,18 +113,21 @@ tape('service name', function (t) {
 
   let foobar = require('gcr.io/kubescript-test/kubescript-app')
   t.same(foobar, {
-    serviceName: 'kubescript-app',
+    host: 'kubescript-app',
+    port: 80,
     image: 'gcr.io/kubescript-test/kubescript-app',
     spec: { spec: 'blah' }
   })
 
   hook.unmount()
+  reqhack.clear()
   t.end()
 })
 
 tape('unmount', function (t) {
   let hook = reqhack.register(makePackageData())
   hook.unmount()
+  reqhack.clear()
 
   t.throws(() => {
     require('gcr.io/kubescript-test/kubescript-app')
@@ -109,7 +135,7 @@ tape('unmount', function (t) {
   t.end()
 })
 
-function makePackageData () {
+function makePackageData() {
   return {
     dependencies: {
       'tape': '^4.9.0'

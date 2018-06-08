@@ -10,6 +10,10 @@ if (process.env['KUBESCRIPT_PHASE'] !== 'build') {
   specLock = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'kubescript-lock.json')))
 }
 
+function clear () {
+  requiredImages = []
+}
+
 function register (packageData) {
   return requireHacker.global_hook('containerImages', path => {
     let deps = _.get(packageData, 'kubescript.dependencies', {})
@@ -32,7 +36,9 @@ function register (packageData) {
       throw new Error(`Cannot find image '${path}'`)
     }
 
-    requiredImages.push({ serviceName: serviceName(path), image: path, spec: deps[path] })
+    if (!requiredImages.find(i => i.image === path)) {
+      requiredImages.push({ serviceName: serviceName(path), image: path, spec: deps[path] })
+    }
     let src = `
       module.exports = {
         host: '${serviceName(path)}',
@@ -53,4 +59,4 @@ function serviceName (imagePath) {
   return path.basename(imagePath.split(':')[0])
 }
 
-module.exports = { register, registerList }
+module.exports = { register, registerList, clear }
