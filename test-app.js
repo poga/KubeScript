@@ -1,4 +1,5 @@
 const KubeScript = require('.')
+require('redis')
 
 let app = new KubeScript()
 

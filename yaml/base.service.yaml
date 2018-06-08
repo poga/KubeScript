@@ -10,5 +10,5 @@ spec:
       port: 80
       targetPort: 3000
   selector:
-    app: event-gateway
+    app: <APP_NAME>
     tier: frontend

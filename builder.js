@@ -82,7 +82,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   fs.writeFileSync(path.join(out, 'app.yaml'), yaml.safeDump(appd))
 
   // setup app service
-  let apps = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'app.service.yaml')))
+  let apps = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.service.yaml')))
   apps.spec.selector.app = packageData.name
   fs.writeFileSync(path.join(out, 'app.service.yaml'), yaml.safeDump(apps))
 
@@ -117,6 +117,12 @@ Builder.prototype.run = async function (outPrefix, opts) {
     fs.writeFileSync(path.join(out, `${req.serviceName}.yaml`), yaml.safeDump(base))
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.yaml`)} > ${path.join(out, `${req.serviceName}.injected.yaml`)}`])
+
+    let baseService = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.service.yaml')))
+    baseService.spec.selector.app = req.serviceName
+    fs.writeFileSync(path.join(out, `${req.serviceName}.service.yaml`), yaml.safeDump(baseService))
+
+    await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.yaml`)} > ${path.join(out, `${req.serviceName}.service.injected.yaml`)}`])
   }
 
   if (opts.dryRun) return
@@ -141,6 +147,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   for (let req of requiredImages) {
     await spawn('kubectl', ['apply', '-f', path.join(out, `${req.serviceName}.injected.yaml`)])
     await spawn('kubectl', ['rollout', 'status', `deploy/${req.serviceName}`])
+    await spawn('kubectl', ['apply', '-f', path.join(out, `${req.serviceName}.service.yaml`)])
   }
 
   // // * setup app pods & services
