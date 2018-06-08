@@ -69,6 +69,11 @@ Runner.prototype.run = function () {
   let app = new Koa()
   this.app = app
 
+  // setup liveness check
+  this.router.get('/readinessProbe', function (ctx) {
+    ctx.body = 'ok'
+  })
+
   app
     .use(cors())
     .use(logger())

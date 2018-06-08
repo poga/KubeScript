@@ -78,6 +78,15 @@ Builder.prototype.run = async function (outPrefix, opts) {
   appd.spec.template.metadata.labels.builtAt = `${Math.floor(+new Date() / 1000)}`
   appd.spec.template.spec.containers[0].image = appImageTag
   appd.spec.template.spec.containers[0].name = packageData.name
+  appd.spec.template.spec.containers[0].readinessProbe = {
+    httpGet: {
+      path: '/readinessProbe',
+      port: 3000
+    },
+    initialDelaySeconds: 1,
+    timeoutSeconds: 1,
+    periodSeconds: 15
+  }
   fs.writeFileSync(path.join(out, 'app.yaml'), yaml.safeDump(appd))
 
   // setup app service
