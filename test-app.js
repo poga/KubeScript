@@ -1,7 +1,7 @@
 const KubeScript = require('.')
 const redis = require('redis')
 const path = require('path')
-const redisConfig = require('docker://redis:4.0.9')
+const redisConfig = require('docker://redis')
 
 let app = new KubeScript()
 

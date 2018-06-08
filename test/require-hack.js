@@ -135,7 +135,7 @@ tape('unmount', function (t) {
   t.end()
 })
 
-function makePackageData() {
+function makePackageData () {
   return {
     dependencies: {
       'tape': '^4.9.0'

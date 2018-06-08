@@ -110,12 +110,13 @@ Builder.prototype.run = async function (outPrefix, opts) {
     base.spec.template.metadata.labels.tier = 'dependency'
 
     let version = req.spec.version ? `:${req.spec.version}` : ''
-    base.spec.template.spec.containers[0].image = `${req.image}${version}`
+    let image = `${req.image}${version}`
+    base.spec.template.spec.containers[0].image = image
     base.spec.template.spec.containers[0].name = req.serviceName
     if (req.spec.ports) {
       base.spec.template.spec.containers[0].ports = req.spec.ports
     } else {
-      await spawn('docker', ['pull', req.image])
+      await spawn('docker', ['pull', image])
       let exposedPorts = await exec(`docker inspect --format="{{json .Config.ExposedPorts }}" ${req.image}`)
       exposedPorts = JSON.parse(exposedPorts.stdout)
       console.log(exposedPorts)

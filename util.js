@@ -41,7 +41,7 @@ function exec (cmd) {
 }
 
 function serviceName (imagePath) {
-  return path.basename(imagePath.split(':')[0])
+  return path.basename(imagePath)
 }
 
 module.exports = { functionId, eventFunctionId, exec, spawn, serviceName }
