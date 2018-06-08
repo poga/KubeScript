@@ -35,7 +35,8 @@ function register (packageData) {
     requiredImages.push({ serviceName: serviceName(path), image: path, spec: deps[path] })
     let src = `
       module.exports = {
-        serviceName: '${serviceName(path)}',
+        host: '${serviceName(path)}',
+        port: 80,
         image: '${path}',
         spec: ${JSON.stringify(spec)}
       }

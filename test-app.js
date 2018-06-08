@@ -1,7 +1,7 @@
 const KubeScript = require('.')
 const redis = require('redis')
 const path = require('path')
-require('docker://redis')
+const redisConfig = require('docker://redis')
 
 let app = new KubeScript()
 
@@ -20,7 +20,7 @@ app.on('event2', function (ctx) {
 
 app.get('/redis', async function (ctx) {
   console.log(redis)
-  let c = redis.createClient({ host: 'redis', port: 80 })
+  let c = redis.createClient({ host: redisConfig.host, port: redisConfig.port })
   await wait(c, 'ready')
 
   console.log(c.server_info.redis_version)
