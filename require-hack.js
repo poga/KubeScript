@@ -17,7 +17,8 @@ function register (packageData) {
       return
     }
 
-    if (packageData.dependencies[path]) {
+    // skip if it's defined in dependencies or devDependencies
+    if (packageData.dependencies[path] || packageData.devDependencies[path]) {
       return
     }
 

@@ -22,6 +22,16 @@ tape('require hack should prioritize npm module', function (t) {
   t.end()
 })
 
+tape('require hack should prioritize devDependencies', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  let m = require('redis')
+  t.notOk(m.spec)
+
+  hook.unmount()
+  t.end()
+})
+
 tape('require hack can be forced to require docker image with docker://', function (t) {
   let hook = reqhack.register(makePackageData())
 
@@ -104,11 +114,15 @@ function makePackageData () {
     dependencies: {
       'tape': '^4.9.0'
     },
+    devDependencies: {
+      'redis': '=1.0.0'
+    },
     kubescript: {
       dependencies: {
         foobar: { spec: 1234 },
         'gcr.io/kubescript-test/kubescript-app': { spec: 'blah' },
-        tape: { spec: 'test' }
+        tape: { spec: 'test' },
+        redis: { spec: 'abc' }
       }
     }
   }
