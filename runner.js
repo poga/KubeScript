@@ -16,7 +16,7 @@ const reqhack = require('./require-hack')
 const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
 reqhack.register(packageData)
 
-function Runner(eventGatewayHost) {
+function Runner (eventGatewayHost) {
   if (!eventGatewayHost) eventGatewayHost = DEFAULT_EVENT_GATEWAY_HOST
 
   this.EG = eventGatewayHost
