@@ -10,7 +10,6 @@ Events.prototype.register = function (reg) {
   let { event, method, path } = reg
 
   if (event === 'http') {
-    reg.path = `/${functionId(method, path)}`
     reg.functionId = functionId(method, path)
   } else {
     reg.functionId = eventFunctionId(event)
