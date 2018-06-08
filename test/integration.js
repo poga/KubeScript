@@ -16,3 +16,7 @@ tape('integration test', async function (t) {
 
   t.end()
 })
+
+process.on('unhandledRejection', (err, p) => {
+  throw err
+})

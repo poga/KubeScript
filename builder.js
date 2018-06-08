@@ -191,10 +191,6 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
 module.exports = Builder
 
-process.on('unhandledRejection', (err, p) => {
-  throw err
-})
-
 async function getEventgatewayIP () {
   let svc = await exec('kubectl get svc/event-gateway -o json')
   svc = JSON.parse(svc.stdout)

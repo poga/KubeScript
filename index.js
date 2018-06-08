@@ -7,3 +7,7 @@ if (process.env['KUBESCRIPT_PHASE'] === 'build') {
 }
 
 module.exports = app
+
+process.on('unhandledRejection', (err, p) => {
+  throw err
+})
