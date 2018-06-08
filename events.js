@@ -1,5 +1,5 @@
 const request = require('request-promise')
-const { assertNotAnonymous } = require('./assert')
+const { functionId, eventFunctionId } = require('./util')
 
 function Events () {
   this.subscriptions = {}
@@ -7,18 +7,17 @@ function Events () {
 }
 
 Events.prototype.register = function (reg) {
-  let { event, method, path, handler } = reg
-  let name = handler.name
+  let { event, method, path } = reg
 
-  assertNotAnonymous(name)
+  if (event === 'http') {
+    reg.path = `/${functionId(method, path)}`
+    reg.functionId = functionId(method, path)
+  } else {
+    reg.functionId = eventFunctionId(event)
+  }
 
-  reg.handlerName = name
-  reg.name = reg.method ? `${reg.method}-${reg.handlerName}` : reg.handlerName
-
-  this.functions[reg.name] = reg
-
-  let key = Events.getKey(event, method, path, name)
-  this.subscriptions[key] = reg
+  this.functions[reg.functionId] = reg
+  this.subscriptions[getSubscriptionKey(event, method, path, functionId)] = reg
 }
 
 Events.prototype.apply = async function (eventGatewayIP) {
@@ -27,11 +26,15 @@ Events.prototype.apply = async function (eventGatewayIP) {
   await this._applySubscriptions(eventGatewayIP)
 
   // remove functions after their subscriptions are removed
-  for (let name of functionsToRemove) {
-    console.log('removing', name)
+  await this._removeFunctions(eventGatewayIP, functionsToRemove)
+}
+
+Events.prototype._removeFunctions = async function (eventGatewayIP, functionsToRemove) {
+  for (let functionId of functionsToRemove) {
+    console.log('removing', functionId)
     await request({
       method: 'DELETE',
-      uri: `http://${eventGatewayIP}:4001/v1/spaces/default/functions/${name}`
+      uri: `http://${eventGatewayIP}:4001/v1/spaces/default/functions/${functionId}`
     })
   }
 }
@@ -48,25 +51,24 @@ Events.prototype._applyFunctions = async function (eventGatewayIP) {
   console.log('functions', functions)
   let existedFunctions = {}
   for (let func of functions) {
-    let name = func.functionId
-    existedFunctions[name] = true
-    if (!this.functions[name]) {
-      console.log('remove function', name)
-      functionsToRemove.push(name)
+    existedFunctions[func.functionId] = true
+    if (!this.functions[func.functionId]) {
+      console.log('remove function', func.functionId)
+      functionsToRemove.push(func.functionId)
     }
   }
 
-  for (let name of Object.keys(this.functions)) {
-    let reg = this.functions[name]
-    if (!existedFunctions[name]) {
+  for (let functionId of Object.keys(this.functions)) {
+    let reg = this.functions[functionId]
+    if (!existedFunctions[functionId]) {
       console.log('add function', reg)
       await request({
         method: 'POST',
         uri: `http://${eventGatewayIP}:4001/v1/spaces/default/functions`,
         body: {
-          functionId: reg.name,
+          functionId: reg.functionId,
           type: 'http',
-          provider: { url: `http://app/${reg.name}` }
+          provider: { url: `http://app${reg.path}` }
         },
         json: true
       })
@@ -87,11 +89,11 @@ Events.prototype._applySubscriptions = async function (eventGatewayIP) {
   let existedSubscriptions = {}
   // remove old subscriptions
   for (let sub of subscriptions) {
-    let key = Events.getKey(sub.event, sub.method, sub.path, sub.functionID)
-    existedSubscriptions[key] = true
+    let subKey = getSubscriptionKey(sub.event, sub.method, sub.path, sub.functionId)
+    existedSubscriptions[subKey] = true
 
-    if (!this.subscriptions[key]) {
-      console.log('remove', key)
+    if (!this.subscriptions[subKey]) {
+      console.log('removing subscription', subKey)
       await request({
         method: 'DELETE',
         uri: `http://${eventGatewayIP}:4001/v1/spaces/default/subscriptions/${sub.subscriptionId}`
@@ -100,15 +102,15 @@ Events.prototype._applySubscriptions = async function (eventGatewayIP) {
   }
 
   // add new subscriptions
-  for (let key of Object.keys(this.subscriptions)) {
-    let sub = this.subscriptions[key]
-    if (!existedSubscriptions[key]) {
-      console.log('add', this.subscriptions[key])
+  for (let subKey of Object.keys(this.subscriptions)) {
+    let sub = this.subscriptions[subKey]
+    if (!existedSubscriptions[subKey]) {
+      console.log('adding subscription', this.subscriptions[subKey])
       await request({
         method: 'POST',
         uri: `http://${eventGatewayIP}:4001/v1/spaces/default/subscriptions`,
         body: {
-          functionId: sub.name,
+          functionId: sub.functionId,
           event: sub.event,
           method: sub.method,
           path: sub.path
@@ -119,9 +121,8 @@ Events.prototype._applySubscriptions = async function (eventGatewayIP) {
   }
 }
 
-Events.getKey = function (event, method, path, handlerName) {
-  let key = [event, method, path, handlerName].join(',')
-  return key
-}
-
 module.exports = Events
+
+function getSubscriptionKey (event, method, path, functionId) {
+  return [event, method, path, functionId].join(',')
+}

@@ -7,7 +7,7 @@ const bodyParser = require('koa-bodyparser')
 const fs = require('fs')
 const path = require('path')
 
-const { assertNotAnonymous } = require('./assert')
+const { functionId, eventFunctionId } = require('./util')
 
 const DEFAULT_EVENT_GATEWAY_HOST = 'event-gateway'
 
@@ -24,33 +24,23 @@ function Runner (eventGatewayHost) {
 }
 
 Runner.prototype.on = function (event, handler) {
-  assertNotAnonymous(handler.name)
-
-  this.router.post(`/${handler.name}`, handler)
+  this.router.post(`/${eventFunctionId(event)}`, handler)
 }
 
 Runner.prototype.get = function (path, handler) {
-  assertNotAnonymous(handler.name)
-
-  this.router.post(`/GET-${handler.name}`, handler)
+  this.router.post(`/${functionId('get', path)}`, handler)
 }
 
 Runner.prototype.post = function (path, handler) {
-  assertNotAnonymous(handler.name)
-
-  this.router.post(`/POST-${handler.name}`, handler)
+  this.router.post(`/${functionId('post', path)}`, handler)
 }
 
 Runner.prototype.put = function (path, handler) {
-  assertNotAnonymous(handler.name)
-
-  this.router.post(`/PUT-${handler.name}`, handler)
+  this.router.post(`/${functionId('put', path)}`, handler)
 }
 
 Runner.prototype.delete = function (path, handler) {
-  assertNotAnonymous(handler.name)
-
-  this.router.post(`/DELETE-${handler.name}`, handler)
+  this.router.post(`/${functionId('delete', path)}`, handler)
 }
 
 Runner.prototype.emit = async function (event, payload) {
