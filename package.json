@@ -21,8 +21,7 @@
     "mkdirp": "^0.5.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
-    "require-hacker": "^3.0.1",
-    "tape": "^4.9.0"
+    "require-hacker": "^3.0.1"
   },
   "kubescript": {
     "prefix": "gcr.io/spacer-184617/",
@@ -38,5 +37,8 @@
       },
       "redis": {}
     }
+  },
+  "devDependencies": {
+    "tape": "^4.9.1"
   }
 }
