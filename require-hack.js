@@ -29,7 +29,7 @@ function register (packageData) {
     }
 
     if (!deps[path]) {
-      throw new Error(`Cannot find module '${path}'`)
+      throw new Error(`Cannot find image '${path}'`)
     }
 
     requiredImages.push({ serviceName: serviceName(path), image: path, spec: deps[path] })

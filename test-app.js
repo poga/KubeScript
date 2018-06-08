@@ -1,5 +1,7 @@
 const KubeScript = require('.')
 const redis = require('redis')
+const path = require('path')
+require('docker://redis')
 
 let app = new KubeScript()
 
@@ -16,9 +18,24 @@ app.on('event2', function (ctx) {
   ctx.body = 'ok'
 })
 
+app.get('/redis', async function (ctx) {
+  console.log(redis)
+  let c = redis.createClient({ host: 'redis', port: 80 })
+  await wait(c, 'ready')
+
+  console.log(c.server_info.redis_version)
+  ctx.body = c.server_info.redis_version
+})
+
 app.get('/foo', function (ctx) {
   console.log(ctx)
   ctx.body = 'bar'
 })
 
-app.run()
+app.run('./out', { dockerfilePath: path.join(__dirname, 'test', 'Dockerfile') })
+
+function wait (emitter, event) {
+  return new Promise((resolve, reject) => {
+    emitter.on(event, (x) => { resolve(x) })
+  })
+}

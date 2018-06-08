@@ -106,6 +106,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
     let base = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.yaml')))
     base.metadata.name = req.serviceName
     base.metadata.labels.app = 'service'
+    base.spec.template.metadata.labels.app = req.serviceName
     base.spec.template.metadata.labels.tier = 'dependency'
     base.spec.template.metadata.labels.path = req.image
 
@@ -137,6 +138,10 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
     let baseService = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.service.yaml')))
     baseService.spec.selector.app = req.serviceName
+    baseService.metadata.name = req.serviceName
+    baseService.spec.selector.tier = 'dependency'
+    baseService.spec.selector.app = req.serviceName
+    baseService.spec.ports[0].targetPort = base.spec.template.spec.containers[0].ports[0].containerPort
     fs.writeFileSync(path.join(out, `${req.serviceName}.service.yaml`), yaml.safeDump(baseService))
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.yaml`)} > ${path.join(out, `${req.serviceName}.service.injected.yaml`)}`])
