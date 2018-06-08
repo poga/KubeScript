@@ -108,7 +108,6 @@ Builder.prototype.run = async function (outPrefix, opts) {
     base.metadata.labels.app = 'service'
     base.spec.template.metadata.labels.app = req.serviceName
     base.spec.template.metadata.labels.tier = 'dependency'
-    base.spec.template.metadata.labels.path = req.image
 
     let version = req.spec.version ? `:${req.spec.version}` : ''
     base.spec.template.spec.containers[0].image = `${req.image}${version}`

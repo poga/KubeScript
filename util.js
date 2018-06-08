@@ -1,4 +1,5 @@
 const cp = require('child_process')
+const path = require('path')
 
 function functionId (method, path) {
   return `${method.toUpperCase()}-${path.slice(1).replace('/')}`
@@ -39,4 +40,8 @@ function exec (cmd) {
   })
 }
 
-module.exports = { functionId, eventFunctionId, exec, spawn }
+function serviceName (imagePath) {
+  return path.basename(imagePath.split(':')[0])
+}
+
+module.exports = { functionId, eventFunctionId, exec, spawn, serviceName }

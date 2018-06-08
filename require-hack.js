@@ -3,6 +3,8 @@ const path = require('path')
 const _ = require('lodash')
 const fs = require('fs')
 
+const { serviceName } = require('./util')
+
 let requiredImages = []
 
 var specLock = {}
@@ -53,10 +55,6 @@ function register (packageData) {
 
 function registerList () {
   return requiredImages
-}
-
-function serviceName (imagePath) {
-  return path.basename(imagePath.split(':')[0])
 }
 
 module.exports = { register, registerList, clear }

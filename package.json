@@ -27,7 +27,6 @@
     "prefix": "gcr.io/spacer-184617/",
     "dependencies": {
       "foobar": {
-        "version": "latest",
         "ports": [
           {
             "name": "http-server",
@@ -35,7 +34,7 @@
           }
         ]
       },
-      "redis": {}
+      "redis:4.0.9": {}
     }
   },
   "devDependencies": {
