@@ -39,6 +39,7 @@
     }
   },
   "devDependencies": {
+    "redis": "^2.8.0",
     "tape": "^4.9.1"
   }
 }

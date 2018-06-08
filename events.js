@@ -10,6 +10,7 @@ Events.prototype.register = function (reg) {
   let { event, method, path } = reg
 
   if (event === 'http') {
+    reg.internalPath = `/${functionId(method, path)}`
     reg.functionId = functionId(method, path)
   } else {
     reg.functionId = eventFunctionId(event)
@@ -67,7 +68,7 @@ Events.prototype._applyFunctions = async function (eventGatewayIP) {
         body: {
           functionId: reg.functionId,
           type: 'http',
-          provider: { url: `http://app${reg.path}` }
+          provider: { url: `http://app${reg.internalPath}` }
         },
         json: true
       })
