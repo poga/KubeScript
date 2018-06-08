@@ -1,9 +1,10 @@
 const KubeScript = require('.')
-require('redis')
+const redis = require('redis')
 
 let app = new KubeScript()
 
 app.on('event1', function event1Handler (ctx) {
+  console.log('redis', JSON.stringify(redis))
   console.log('event1', ctx, ctx.request.body)
 
   app.emit('event2', { a: 'b' })

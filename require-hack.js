@@ -1,8 +1,14 @@
 const requireHacker = require('require-hacker')
 const path = require('path')
 const _ = require('lodash')
+const fs = require('fs')
 
 let requiredImages = []
+
+var specLock = {}
+if (process.env['KUBESCRIPT_PHASE'] !== 'build') {
+  specLock = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'kubescript-lock.json')))
+}
 
 function register (packageData) {
   return requireHacker.global_hook('containerImages', path => {
@@ -10,6 +16,8 @@ function register (packageData) {
     if (!deps[path] && !path.startsWith('docker://')) {
       return
     }
+
+    let spec = specLock[serviceName(path)] ? specLock[serviceName(path)] : deps[path]
 
     if (path.startsWith('docker://')) {
       path = path.replace('docker://', '')
@@ -20,7 +28,7 @@ function register (packageData) {
       module.exports = {
         serviceName: '${serviceName(path)}',
         image: '${path}',
-        spec: ${JSON.stringify(deps[path])}
+        spec: ${JSON.stringify(spec)}
       }
     `
     return { source: src, path }

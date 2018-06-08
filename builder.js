@@ -88,6 +88,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   // dependent pods
   let requiredImages = reqhack.registerList()
+  let specLock = {}
   for (let req of requiredImages) {
     let base = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.yaml')))
     base.metadata.name = req.serviceName
@@ -114,6 +115,9 @@ Builder.prototype.run = async function (outPrefix, opts) {
       base.spec.template.spec.containers[0].ports = specPorts
     }
 
+    specLock[req.serviceName] = base.spec.template.spec
+    specLock[req.serviceName].ports = base.spec.template.spec.containers[0].ports
+
     fs.writeFileSync(path.join(out, `${req.serviceName}.yaml`), yaml.safeDump(base))
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.yaml`)} > ${path.join(out, `${req.serviceName}.injected.yaml`)}`])
@@ -124,6 +128,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.yaml`)} > ${path.join(out, `${req.serviceName}.service.injected.yaml`)}`])
   }
+  fs.writeFileSync(path.join(process.cwd(), 'kubescript-lock.json'), JSON.stringify(specLock))
 
   if (opts.dryRun) return
 
