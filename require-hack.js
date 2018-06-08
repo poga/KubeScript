@@ -17,6 +17,10 @@ function register (packageData) {
       return
     }
 
+    if (packageData.dependencies[path]) {
+      return
+    }
+
     let spec = specLock[serviceName(path)] ? specLock[serviceName(path)] : deps[path]
 
     if (path.startsWith('docker://')) {

@@ -12,6 +12,26 @@ tape('require hack should ignore valid require', function (t) {
   t.end()
 })
 
+tape('require hack should prioritize npm module', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  let m = require('tape')
+  t.notOk(m.spec)
+
+  hook.unmount()
+  t.end()
+})
+
+tape('require hack can be forced to require docker image with docker://', function (t) {
+  let hook = reqhack.register(makePackageData())
+
+  let m = require('docker://tape')
+  t.notOk(m.spec)
+
+  hook.unmount()
+  t.end()
+})
+
 tape('force hijack require with docker://', function (t) {
   let hook = reqhack.register(makePackageData())
 
@@ -81,10 +101,14 @@ tape('unmount', function (t) {
 
 function makePackageData () {
   return {
+    dependencies: {
+      'tape': '^4.9.0'
+    },
     kubescript: {
       dependencies: {
         foobar: { spec: 1234 },
-        'gcr.io/kubescript-test/kubescript-app': { spec: 'blah' }
+        'gcr.io/kubescript-test/kubescript-app': { spec: 'blah' },
+        tape: { spec: 'test' }
       }
     }
   }
