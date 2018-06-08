@@ -1,6 +1,9 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
+const util = require('util')
+let mkdirp = require('mkdirp')
+mkdirp = util.promisify(mkdirp)
 
 // setup require hook
 const reqhack = require('./require-hack')
@@ -53,11 +56,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   let out = path.resolve(outPrefix)
 
-  try {
-    fs.mkdirSync(out)
-  } catch (error) {
-    console.warn(error.toString())
-  }
+  await mkdirp(out)
 
   // 1. generate yamls
 
