@@ -11,7 +11,7 @@ const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package
 reqhack.register(packageData)
 
 const Events = require('./events')
-const { spawn, exec } = require('./util')
+const { spawn, exec, getEventgatewayIP } = require('./util')
 
 function Builder () {
   this.events = new Events()
@@ -190,10 +190,3 @@ Builder.prototype.run = async function (outPrefix, opts) {
 }
 
 module.exports = Builder
-
-async function getEventgatewayIP () {
-  let svc = await exec('kubectl get svc/event-gateway -o json')
-  svc = JSON.parse(svc.stdout)
-  let eventgatewayIP = svc.status.loadBalancer.ingress[0].ip
-  return eventgatewayIP
-}

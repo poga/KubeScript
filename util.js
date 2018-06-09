@@ -44,4 +44,11 @@ function serviceName (imagePath) {
   return path.basename(imagePath)
 }
 
-module.exports = { functionId, eventFunctionId, exec, spawn, serviceName }
+async function getEventgatewayIP () {
+  let svc = await exec('kubectl get svc/event-gateway -o json')
+  svc = JSON.parse(svc.stdout)
+  let eventgatewayIP = svc.status.loadBalancer.ingress[0].ip
+  return eventgatewayIP
+}
+
+module.exports = { functionId, eventFunctionId, exec, spawn, serviceName, getEventgatewayIP }

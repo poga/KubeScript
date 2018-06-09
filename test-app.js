@@ -5,17 +5,22 @@ const redisConfig = require('docker://redis')
 
 let app = new KubeScript()
 
+let event1Triggered = false
+let event2Triggered = false
+
 app.on('event1', function (ctx) {
   console.log('redis', JSON.stringify(redis))
   console.log('event1', ctx, ctx.request.body)
 
   app.emit('event2', { a: 'b' })
   ctx.body = 'ok'
+  event1Triggered = true
 })
 
 app.on('event2', function (ctx) {
   console.log('event2', ctx, ctx.request.body)
   ctx.body = 'ok'
+  event2Triggered = true
 })
 
 app.get('/redis', async function (ctx) {
@@ -30,6 +35,11 @@ app.get('/redis', async function (ctx) {
 app.get('/foo', function (ctx) {
   console.log(ctx)
   ctx.body = 'bar'
+})
+
+app.get('/triggered', function (ctx) {
+  console.log(ctx)
+  ctx.body = JSON.stringify({ event1Triggered, event2Triggered })
 })
 
 app.run('./out', { dockerfilePath: path.join(__dirname, 'test', 'Dockerfile') })
