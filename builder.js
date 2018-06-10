@@ -65,11 +65,18 @@ Builder.prototype.run = async function (outPrefix, opts) {
   fs.copyFileSync(path.join(__dirname, 'yaml', 'etcd.yaml'), path.join(out, 'etcd.yaml'))
   fs.copyFileSync(path.join(__dirname, 'yaml', 'event-gateway.yaml'), path.join(out, 'event-gateway.yaml'))
 
+  var dockerfile
   if (opts.dockerfilePath) {
-    fs.copyFileSync(opts.dockerfilePath, path.join(process.cwd(), 'Dockerfile'))
+    dockerfile = fs.readFileSync(opts.dockerfilePath).toString()
   } else {
-    fs.copyFileSync(path.join(__dirname, 'yaml', 'Dockerfile'), path.join(process.cwd(), 'Dockerfile'))
+    dockerfile = fs.readFileSync(__dirname, 'yaml', 'Dockerfile').toString()
   }
+
+  // update Dockerfile to use the specified entry point
+  let mainFile = path.basename(process.argv[1])
+  console.log('mainFile', mainFile)
+  dockerfile = dockerfile.replace('CMD npm start', `CMD node ${mainFile}`)
+  fs.writeFileSync(path.join(process.cwd(), 'Dockerfile'), dockerfile)
 
   // app pod
   let imagePrefix = packageData.kubescript.prefix || ''
