@@ -1,8 +1,8 @@
 # Kubescript
 
-Kubescript is a web-app framework that utilize the power of kubernetes without any kubernetes configuration.
+Kubescript is a web-app framework that helps you build scalable web application.
 
-It compiles your app to a scalable cluster with built-in best-practices, all with plain javascript.
+It compiles your app to a scalable cluster run on kubernetes with built-in best-practices, all with plain javascript.
 
 `npm i kubescript`
 
