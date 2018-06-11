@@ -16,8 +16,10 @@ Events.prototype.register = function (reg) {
     reg.functionId = eventFunctionId(event)
   }
 
+  if (!path) path = '/'
+
   this.functions[reg.functionId] = reg
-  this.subscriptions[getSubscriptionKey(event, method, path, functionId)] = reg
+  this.subscriptions[getSubscriptionKey(event, method, path, reg.functionId)] = reg
 }
 
 Events.prototype.apply = async function (eventGatewayIP) {
@@ -85,7 +87,7 @@ Events.prototype._applySubscriptions = async function (eventGatewayIP) {
     uri: `http://${eventGatewayIP}:4001/v1/spaces/default/subscriptions`
   })
   let subscriptions = JSON.parse(resp).subscriptions
-  console.log(subscriptions)
+  console.log(subscriptions, 'v.s', Object.keys(this.subscriptions))
   let existedSubscriptions = {}
   // remove old subscriptions
   for (let sub of subscriptions) {
