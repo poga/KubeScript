@@ -1,8 +1,6 @@
 # Kubescript
 
-Kubescript is a web-app framework that helps you build scalable web application.
-
-It compiles your app to a scalable cluster run on kubernetes with built-in best-practices, all with plain javascript.
+Kubescript is a web-app framework that helps you build scalable web application on kubernetes.
 
 `npm i kubescript`
 
@@ -52,7 +50,9 @@ $ node index.js
 
 ## Setup
 
-To build app with kubescript, you need the following tools installed:
+To start, you need the following tools installed on your computer:
 
-* kubectl and a kubernetes cluster
+* kubectl
 * [conduit](https://conduit.io/)
+
+You also need a working kubernetes cluster.
