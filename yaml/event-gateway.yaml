@@ -6,7 +6,7 @@ metadata:
     app: event-gateway
   name: event-gateway
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: event-gateway

@@ -52,7 +52,11 @@ $ node index.js
 
 To start, you need the following tools installed on your computer:
 
+* docker
 * kubectl
 * [conduit](https://conduit.io/)
 
 You also need a working kubernetes cluster.
+
+**note**: You need additional role when using GKE. Run the command first: `kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
+

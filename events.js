@@ -13,9 +13,9 @@ Events.prototype.register = function (reg) {
     reg.internalPath = `/${functionId(method, path)}`
     reg.functionId = functionId(method, path)
   } else {
+    reg.internalPath = `/${eventFunctionId(event)}`
     reg.functionId = eventFunctionId(event)
   }
-
   if (!path) path = '/'
 
   this.functions[reg.functionId] = reg
