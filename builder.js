@@ -2,6 +2,7 @@ const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
+const ora = require('ora')
 let mkdirp = require('mkdirp')
 mkdirp = util.promisify(mkdirp)
 
@@ -55,11 +56,12 @@ Builder.prototype.run = async function (outPrefix, opts) {
   if (!opts) opts = {}
 
   let out = path.resolve(outPrefix)
-  console.log('outt', out)
 
   await mkdirp(out)
 
   // 1. generate yamls
+
+  var spinner = ora('Figuring out configurations...').start()
 
   // basic infrastructure
   fs.copyFileSync(path.join(__dirname, 'yaml', 'conduit.yaml'), path.join(out, 'conduit.yaml'))
@@ -75,7 +77,6 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   // update Dockerfile to use the specified entry point
   let mainFile = path.basename(process.argv[1])
-  console.log('mainFile', mainFile)
   dockerfile = dockerfile.replace('CMD npm start', `CMD node ${mainFile}`)
   fs.writeFileSync(path.join(process.cwd(), 'Dockerfile'), dockerfile)
 
@@ -110,16 +111,21 @@ Builder.prototype.run = async function (outPrefix, opts) {
   // dependent pods
   await loader.build(out)
 
+  succeed(spinner)
+
   if (opts.dryRun) return
 
+  spinner = ora('Building application image...').start()
   // 2. build image
   await spawn('docker', ['build', '-t', appImageTag, '.'])
 
   // push to repo
   await spawn('docker', ['push', appImageTag])
+  succeed(spinner)
 
   // 3. apply to k8s
   // setup conduit
+  spinner = ora('Building the infrastructure...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'conduit.yaml')])
   await spawn('kubectl', ['rollout', 'status', 'deploy/controller', '--namespace=conduit'])
 
@@ -127,24 +133,33 @@ Builder.prototype.run = async function (outPrefix, opts) {
   await spawn('kubectl', ['apply', '-f', path.join(out, 'etcd.yaml')])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'event-gateway.yaml')])
   await spawn('kubectl', ['rollout', 'status', 'deploy/event-gateway'])
+  succeed(spinner)
 
+  spinner = ora('Building dependencies...').start()
   // // * setup required containers & service
   await loader.apply(out)
+  succeed(spinner)
 
   // // * setup app pods & services
+  spinner = ora('Deploying...').start()
   // // deploy app
   await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.yaml')} > ${path.join(out, 'app.injected.yaml')}`])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'app.injected.yaml')])
   await spawn('kubectl', ['rollout', 'status', `deploy/${packageData.name}`])
   await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.service.yaml')} > ${path.join(out, 'app.service.injected.yaml')}`])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.injected.yaml')])
+  succeed(spinner)
 
   // setup event-gateway
+  spinner = ora('Wiring up events...').start()
   // get event-gateway external IP
   let eventgatewayIP = await getEventgatewayIP()
-  console.log(eventgatewayIP)
-
   await this.events.apply(eventgatewayIP)
+  succeed(spinner)
 }
 
 module.exports = Builder
+
+function succeed (spinner) {
+  spinner.succeed(spinner.text + 'done')
+}

@@ -74,7 +74,6 @@ async function build (out) {
       await spawn('docker', ['pull', image])
       let exposedPorts = await exec(`docker inspect --format="{{json .Config.ExposedPorts }}" ${req.image}`)
       exposedPorts = JSON.parse(exposedPorts.stdout)
-      console.log(exposedPorts)
 
       let specPorts = []
       for (let port of Object.keys(exposedPorts)) {
