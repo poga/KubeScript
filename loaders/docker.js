@@ -56,7 +56,6 @@ function registerList () {
 }
 
 async function build (out) {
-  console.log('o', out)
   var specLock = {}
   for (let req of requiredImages) {
     let base = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'yaml', 'base.yaml')))
@@ -88,7 +87,6 @@ async function build (out) {
     specLock[req.serviceName] = base.spec.template.spec
     specLock[req.serviceName].ports = base.spec.template.spec.containers[0].ports
 
-    console.log('out', out)
     fs.writeFileSync(path.join(out, `${req.serviceName}.yaml`), yaml.safeDump(base))
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.yaml`)} > ${path.join(out, `${req.serviceName}.injected.yaml`)}`])
