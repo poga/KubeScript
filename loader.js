@@ -32,4 +32,16 @@ function registerList () {
   return registered
 }
 
-module.exports = { register, registerList, clear }
+async function build (out) {
+  for (let l of loaders) {
+    await l.build(out)
+  }
+}
+
+async function apply (out) {
+  for (let l of loaders) {
+    await l.apply(out)
+  }
+}
+
+module.exports = { register, registerList, clear, build, apply }
