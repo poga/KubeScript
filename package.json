@@ -19,6 +19,7 @@
     "koa-router": "^7.4.0",
     "lodash": "^4.17.10",
     "mkdirp": "^0.5.1",
+    "ora": "^2.1.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "require-hacker": "^3.0.1"
