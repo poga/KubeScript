@@ -1,8 +1,8 @@
 const tape = require('tape')
-const reqhack = require('../require-hack')
+const reqhack = require('../../loaders/docker')
 
 tape('require hack should ignore valid require', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   t.doesNotThrow(() => {
     require('fs')
@@ -14,7 +14,7 @@ tape('require hack should ignore valid require', function (t) {
 })
 
 tape('require hack should prioritize npm module', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   let m = require('tape')
   t.notOk(m.spec)
@@ -25,7 +25,7 @@ tape('require hack should prioritize npm module', function (t) {
 })
 
 tape('require hack should prioritize devDependencies', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   let m = require('redis')
   t.notOk(m.spec)
@@ -36,7 +36,7 @@ tape('require hack should prioritize devDependencies', function (t) {
 })
 
 tape('require hack can be forced to require docker image with docker://', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   let m = require('docker://tape')
   t.notOk(m.spec)
@@ -47,7 +47,7 @@ tape('require hack can be forced to require docker image with docker://', functi
 })
 
 tape('force hijack require with docker://', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   t.doesNotThrow(() => {
     require('docker://foobar')
@@ -59,7 +59,7 @@ tape('force hijack require with docker://', function (t) {
 })
 
 tape('can\'t find module', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   t.throws(() => {
     require('foobar2')
@@ -71,7 +71,7 @@ tape('can\'t find module', function (t) {
 })
 
 tape('unknown docker image', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   t.throws(() => {
     require('docker://foobar2')
@@ -83,7 +83,7 @@ tape('unknown docker image', function (t) {
 })
 
 tape('inject hook', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   let foobar = require('foobar')
   t.same(foobar, { port: 80, host: 'foobar', image: 'foobar', spec: { spec: 1234 } })
@@ -94,7 +94,7 @@ tape('inject hook', function (t) {
 })
 
 tape('require twice', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   require('foobar')
   require('foobar')
@@ -109,7 +109,7 @@ tape('require twice', function (t) {
 })
 
 tape('service name', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
 
   let foobar = require('gcr.io/kubescript-test/kubescript-app')
   t.same(foobar, {
@@ -125,7 +125,7 @@ tape('service name', function (t) {
 })
 
 tape('unmount', function (t) {
-  let hook = reqhack.register(makePackageData())
+  let hook = reqhack.register(makeSpecLock(), makePackageData())
   hook.unmount()
   reqhack.clear()
 
@@ -152,4 +152,8 @@ function makePackageData () {
       }
     }
   }
+}
+
+function makeSpecLock () {
+  return {}
 }

@@ -6,9 +6,9 @@ let mkdirp = require('mkdirp')
 mkdirp = util.promisify(mkdirp)
 
 // setup require hook
-const reqhack = require('./require-hack')
+const loader = require('./loader')
 const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
-reqhack.register(packageData)
+loader.register(packageData)
 
 const Events = require('./events')
 const { spawn, exec, getEventgatewayIP } = require('./util')
@@ -107,7 +107,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   fs.writeFileSync(path.join(out, 'app.service.yaml'), yaml.safeDump(apps))
 
   // dependent pods
-  let requiredImages = reqhack.registerList()
+  let requiredImages = loader.registerList()
   let specLock = {}
   for (let req of requiredImages) {
     let base = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.yaml')))
@@ -153,7 +153,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
     await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.yaml`)} > ${path.join(out, `${req.serviceName}.service.injected.yaml`)}`])
   }
-  fs.writeFileSync(path.join(process.cwd(), 'kubescript-lock.json'), JSON.stringify(specLock))
+  fs.writeFileSync(path.join(process.cwd(), 'kubescript-lock.json'), JSON.stringify(specLock, null, 4))
 
   if (opts.dryRun) return
 

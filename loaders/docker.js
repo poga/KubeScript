@@ -1,25 +1,21 @@
 const requireHacker = require('require-hacker')
-const path = require('path')
 const _ = require('lodash')
-const fs = require('fs')
 
-const { serviceName } = require('./util')
+const { serviceName } = require('../util')
+
+const LOADER_NAME = 'DOCKER'
+const LOADER_PREFIX = 'docker://'
 
 let requiredImages = []
-
-var specLock = {}
-if (process.env['KUBESCRIPT_PHASE'] !== 'build') {
-  specLock = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'kubescript-lock.json')))
-}
 
 function clear () {
   requiredImages = []
 }
 
-function register (packageData) {
-  return requireHacker.global_hook('containerImages', path => {
+function register (specLock, packageData) {
+  return requireHacker.global_hook(LOADER_NAME, path => {
     let deps = _.get(packageData, 'kubescript.dependencies', {})
-    if (!deps[path] && !path.startsWith('docker://')) {
+    if (!deps[path] && !path.startsWith(LOADER_PREFIX)) {
       return
     }
 

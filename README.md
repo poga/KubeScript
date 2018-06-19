@@ -53,7 +53,7 @@ $ node index.js
 To start, you need the following tools installed on your computer:
 
 * docker
-* kubectl
+* kubectl: only tested with 1.9.7
 * [conduit](https://conduit.io/)
 
 You also need a working kubernetes cluster.

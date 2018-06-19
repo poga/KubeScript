@@ -12,9 +12,9 @@ const { functionId, eventFunctionId } = require('./util')
 const DEFAULT_EVENT_GATEWAY_HOST = 'event-gateway'
 
 // setup require hook
-const reqhack = require('./require-hack')
+const loader = require('./loader')
 const packageData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
-reqhack.register(packageData)
+loader.register(packageData)
 
 function Runner (eventGatewayHost) {
   if (!eventGatewayHost) eventGatewayHost = DEFAULT_EVENT_GATEWAY_HOST
