@@ -4,10 +4,11 @@ Kubescript is a web-app framework that helps you build scalable web application 
 
 `npm i kubescript`
 
-## Quickstart
+![preview](./assets/cli.png)
+
+## Synopsis
 
 ```javascript
-// index.js
 const App = require('kubescript')
 // require docker images directly
 const redisConfig = require('docker://redis')
@@ -42,12 +43,6 @@ app.on('send_welcome_email', function (ctx) {
 app.run()
 ```
 
-Build the app:
-
-```
-$ node index.js
-```
-
 ## Setup
 
 To start, you need the following tools installed on your computer:
@@ -58,5 +53,7 @@ To start, you need the following tools installed on your computer:
 
 You also need a working kubernetes cluster.
 
-**note**: You need additional role when using GKE. Run the command first: `kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
+**note**: When using GKE, you need to create a role first:
+
+`kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
 

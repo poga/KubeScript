@@ -3,3 +3,4 @@ out
 /Dockerfile
 /testOut
 /kubescript-lock.json
+.DS_Store

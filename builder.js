@@ -156,6 +156,8 @@ Builder.prototype.run = async function (outPrefix, opts) {
   let eventgatewayIP = await getEventgatewayIP()
   await this.events.apply(eventgatewayIP)
   succeed(spinner)
+
+  console.log(`\n🎉 Your app is ready at http://${eventgatewayIP}:4000/`)
 }
 
 module.exports = Builder
