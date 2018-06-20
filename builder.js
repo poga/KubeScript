@@ -125,7 +125,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   // 3. apply to k8s
   // setup conduit
-  spinner = ora('Building the infrastructure...').start()
+  spinner = ora('Building infrastructure...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'conduit.yaml')])
   await spawn('kubectl', ['rollout', 'status', 'deploy/controller', '--namespace=conduit'])
 
