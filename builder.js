@@ -115,7 +115,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   if (opts.dryRun) return
 
-  spinner = ora('Building application image...').start()
+  spinner = ora('Building app image...').start()
   // 2. build image
   await spawn('docker', ['build', '-t', appImageTag, '.'])
 
@@ -125,11 +125,13 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   // 3. apply to k8s
   // setup conduit
-  spinner = ora('Building infrastructure...').start()
+  spinner = ora('Building service mesh...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'conduit.yaml')])
   await spawn('kubectl', ['rollout', 'status', 'deploy/controller', '--namespace=conduit'])
+  succeed(spinner)
 
   // setup event-gateway
+  spinner = ora('Building event gateway...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'etcd.yaml')])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'event-gateway.yaml')])
   await spawn('kubectl', ['rollout', 'status', 'deploy/event-gateway'])
@@ -141,7 +143,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   succeed(spinner)
 
   // // * setup app pods & services
-  spinner = ora('Deploying...').start()
+  spinner = ora('Deploying your app...').start()
   // // deploy app
   await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.yaml')} > ${path.join(out, 'app.injected.yaml')}`])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'app.injected.yaml')])
