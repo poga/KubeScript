@@ -15,6 +15,7 @@ tape('integration test', async function (t) {
 
   await spawn('node', ['test-app.js'], { env })
 
+  await sleep(1000)
   let eventGatewayIP = await getEventgatewayIP()
 
   // test GET /foo
