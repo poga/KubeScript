@@ -126,16 +126,12 @@ Builder.prototype.run = async function (outPrefix, opts) {
   succeed(spinner)
 
   // 3. apply to k8s
-  // setup conduit
-  spinner = ora('Building service mesh...').start()
+  // setup conduit & event gateway
+  spinner = ora('Setting up infrastructure ...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'conduit.yaml')])
-  await spawn('kubectl', ['rollout', 'status', 'deploy/controller', '--namespace=conduit'])
-  succeed(spinner)
-
-  // setup event-gateway
-  spinner = ora('Building event gateway...').start()
   await spawn('kubectl', ['apply', '-f', path.join(out, 'etcd.yaml')])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'event-gateway.yaml')])
+  await spawn('kubectl', ['rollout', 'status', 'deploy/controller', '--namespace=conduit'])
   await spawn('kubectl', ['rollout', 'status', 'deploy/event-gateway'])
   succeed(spinner)
 
@@ -148,8 +144,8 @@ Builder.prototype.run = async function (outPrefix, opts) {
   spinner = ora('Deploying your app...').start()
   // // deploy app
   await spawn('kubectl', ['apply', '-f', path.join(out, 'app.yaml')])
-  await spawn('kubectl', ['rollout', 'status', `deploy/${packageData.name}`])
   await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.yaml')])
+  await spawn('kubectl', ['rollout', 'status', `deploy/${packageData.name}`])
   succeed(spinner)
 
   // setup event-gateway
