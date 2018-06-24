@@ -57,3 +57,38 @@ You also need a working kubernetes cluster.
 
 `kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
 
+## API
+
+##### `new App()`
+
+```javascript
+const App = require('kubescript')
+let app = new App()
+```
+
+Create a new KubeScript application.
+
+##### `app.get(path, handler), app.post(path, handler), app.put(path, handler), app.delete(path, handler)`
+
+Create a HTTP endpoint for specified method. `handler` is a [koa](https://koajs.com/) handler.
+
+Routing is done with [koa-router](https://github.com/alexmingoia/koa-router).
+
+##### `app.on(event, handler)`
+
+Subscribe to an event.
+
+##### `app.emit(event)`
+
+Emit an event.
+
+##### `app.run()`
+
+If `KUBESCRIPT_PHASE` environment variable is set to `build`, it will start building your application.
+
+If not, start the application for runtime.
+
+## License
+
+The MIT License
+
