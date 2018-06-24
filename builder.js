@@ -101,12 +101,16 @@ Builder.prototype.run = async function (outPrefix, opts) {
     timeoutSeconds: 1,
     periodSeconds: 15
   }
-  fs.writeFileSync(path.join(out, 'app.yaml'), yaml.safeDump(appd))
+  fs.writeFileSync(path.join(out, 'app.raw.yaml'), yaml.safeDump(appd))
+  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.raw.yaml')} > ${path.join(out, 'app.yaml')}`])
+  fs.unlinkSync(path.join(out, 'app.raw.yaml'))
 
   // setup app service
   let apps = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'yaml', 'base.service.yaml')))
   apps.spec.selector.app = packageData.name
-  fs.writeFileSync(path.join(out, 'app.service.yaml'), yaml.safeDump(apps))
+  fs.writeFileSync(path.join(out, 'app.service.raw.yaml'), yaml.safeDump(apps))
+  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.service.raw.yaml')} > ${path.join(out, 'app.service.yaml')}`])
+  fs.unlinkSync(path.join(out, 'app.service.raw.yaml'))
 
   // dependent pods
   await loader.build(out)
@@ -145,11 +149,9 @@ Builder.prototype.run = async function (outPrefix, opts) {
   // // * setup app pods & services
   spinner = ora('Deploying your app...').start()
   // // deploy app
-  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.yaml')} > ${path.join(out, 'app.injected.yaml')}`])
-  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.injected.yaml')])
+  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.yaml')])
   await spawn('kubectl', ['rollout', 'status', `deploy/${packageData.name}`])
-  await spawn('sh', ['-c', `conduit inject ${path.join(out, 'app.service.yaml')} > ${path.join(out, 'app.service.injected.yaml')}`])
-  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.injected.yaml')])
+  await spawn('kubectl', ['apply', '-f', path.join(out, 'app.service.yaml')])
   succeed(spinner)
 
   // setup event-gateway

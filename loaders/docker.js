@@ -86,9 +86,10 @@ async function build (out) {
     specLock[req.serviceName] = base.spec.template.spec
     specLock[req.serviceName].ports = base.spec.template.spec.containers[0].ports
 
-    fs.writeFileSync(path.join(out, `${req.serviceName}.yaml`), yaml.safeDump(base))
+    fs.writeFileSync(path.join(out, `${req.serviceName}.raw.yaml`), yaml.safeDump(base))
 
-    await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.yaml`)} > ${path.join(out, `${req.serviceName}.injected.yaml`)}`])
+    await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.raw.yaml`)} > ${path.join(out, `${req.serviceName}.yaml`)}`])
+    fs.unlinkSync(path.join(out, `${req.serviceName}.raw.yaml`))
 
     let baseService = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'yaml', 'base.service.yaml')))
     baseService.spec.selector.app = req.serviceName
@@ -96,9 +97,10 @@ async function build (out) {
     baseService.spec.selector.tier = 'dependency'
     baseService.spec.selector.app = req.serviceName
     baseService.spec.ports[0].targetPort = base.spec.template.spec.containers[0].ports[0].containerPort
-    fs.writeFileSync(path.join(out, `${req.serviceName}.service.yaml`), yaml.safeDump(baseService))
+    fs.writeFileSync(path.join(out, `${req.serviceName}.service.raw.yaml`), yaml.safeDump(baseService))
 
-    await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.yaml`)} > ${path.join(out, `${req.serviceName}.service.injected.yaml`)}`])
+    await spawn('sh', ['-c', `conduit inject ${path.join(out, `${req.serviceName}.service.raw.yaml`)} > ${path.join(out, `${req.serviceName}.service.yaml`)}`])
+    fs.unlinkSync(path.join(out, `${req.serviceName}.service.raw.yaml`))
   }
 
   fs.writeFileSync(path.join(process.cwd(), 'kubescript-lock.json'), JSON.stringify(specLock, null, 4))
@@ -107,7 +109,7 @@ async function build (out) {
 
 async function apply (out) {
   for (let req of requiredImages) {
-    await spawn('kubectl', ['apply', '-f', path.join(out, `${req.serviceName}.injected.yaml`)])
+    await spawn('kubectl', ['apply', '-f', path.join(out, `${req.serviceName}.yaml`)])
     await spawn('kubectl', ['rollout', 'status', `deploy/${req.serviceName}`])
     await spawn('kubectl', ['apply', '-f', path.join(out, `${req.serviceName}.service.yaml`)])
   }
