@@ -2,7 +2,7 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Kubescript is a web-app framework that helps you build scalable web application on kubernetes.
+Kubescript is a web-app framework that helps you build scalable web application on kubernetes with plain JavaScript.
 
 `npm i kubescript`
 
@@ -11,6 +11,7 @@ Kubescript is a web-app framework that helps you build scalable web application 
 ## Synopsis
 
 ```javascript
+// index.js
 const App = require('kubescript')
 // require docker images directly
 const redisConfig = require('docker://redis')
@@ -45,7 +46,9 @@ app.on('send_welcome_email', function (ctx) {
 app.run()
 ```
 
-For example, see `test-app.js`.
+Building this application with `KUBESCRIPT_PHASE=build node index.js` will setup a service mesh, event gateway, and the microservices the app depends on, ready to be deployed to any kubernetes cluster.
+
+For more example, see `test-app.js`.
 
 ## Setup
 
@@ -63,8 +66,7 @@ You also need a working kubernetes cluster.
 
 ## Config
 
-To use kubescript, you need to add some settings to your `package.json`. Here's an example
-
+You need to add settings to your `package.json`. Here's an example:
 
 ```json
 {
