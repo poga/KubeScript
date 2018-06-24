@@ -11,37 +11,37 @@ try {
 }
 
 tape('integration test', async function (t) {
-  let env = Object.assign({ 'KUBESCRIPT_PHASE': 'build' }, process.env)
+  try {
+    let env = Object.assign({ 'KUBESCRIPT_PHASE': 'build' }, process.env)
 
-  await spawn('node', ['test-app.js'], { env })
+    await spawn('node', ['test-app.js'], { env })
 
-  await sleep(1000)
-  let eventGatewayIP = await getEventgatewayIP()
+    await sleep(1000)
+    let eventGatewayIP = await getEventgatewayIP()
 
   // test GET /foo
-  let resp = await request.get(`http://${eventGatewayIP}:4000/foo`)
-  t.same(resp, 'bar')
+    let resp = await request.get(`http://${eventGatewayIP}:4000/foo`)
+    t.same(resp, 'bar')
   // test GET /redis
-  let resp2 = await request.get(`http://${eventGatewayIP}:4000/redis`)
-  t.same(resp2, '4.0.9')
+    let resp2 = await request.get(`http://${eventGatewayIP}:4000/redis`)
+    t.same(resp2, '4.0.9')
   // test emit event
-  await request({
-    method: 'POST',
-    url: `http://${eventGatewayIP}:4000`,
-    headers: {
-      event: 'event1'
-    }
-  })
-  await sleep(1000)
+    await request({
+      method: 'POST',
+      url: `http://${eventGatewayIP}:4000`,
+      headers: {
+        event: 'event1'
+      }
+    })
+    await sleep(1000)
   // test events are triggered
-  let resp3 = await request.get(`http://${eventGatewayIP}:4000/triggered`)
-  t.same(resp3, '{"event1Triggered":true,"event2Triggered":true}')
-
-  t.end()
-})
-
-process.on('unhandledRejection', (err, p) => {
-  throw err
+    let resp3 = await request.get(`http://${eventGatewayIP}:4000/triggered`)
+    t.same(resp3, '{"event1Triggered":true,"event2Triggered":true}')
+  } catch (e) {
+    console.error(e)
+  } finally {
+    t.end()
+  }
 })
 
 function sleep (ms) {
