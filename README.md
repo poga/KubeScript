@@ -57,6 +57,45 @@ You also need a working kubernetes cluster.
 
 `kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
 
+## Config
+
+To use kubescript, you need to add some settings to your `package.json`. Here's an example
+
+
+```json
+{
+  "name": "YOUR_APP_NAME",
+  "version": "0.0.1",
+  ...
+  "license": "ISC",
+  "dependencies": {
+    ...
+  },
+  "kubescript": {
+    "prefix": "gcr.io/spacer-184617/",
+    "dependencies": {
+      "foobar": {
+        "version": "latest",
+        "ports": [
+          {
+            "name": "http-server",
+            "containerPort": 3000
+          }
+        ]
+      },
+      "redis": {
+        "version": "4.0.9"
+      }
+    }
+  },
+}
+```
+
+* `kubescript.prefix`: The string to prepend to your application's docker image name. This is for pushing your image to the correct registry, such as [Google Container Registry](https://cloud.google.com/container-registry/).
+* `kubescript.dependencies`: The microservices your application depends on. The key is the corresponding docker image name. The value includes:
+  * `version`: The version you want to use. KubeScript will look for image with specified version tag.
+  * `ports`: The service's exposed port. KubeScript will try to find the `EXPOSE` port via inspecting the docker image by default.
+
 ## API
 
 ##### `new App()`
