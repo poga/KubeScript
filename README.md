@@ -1,5 +1,7 @@
 # Kubescript
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 Kubescript is a web-app framework that helps you build scalable web application on kubernetes.
 
 `npm i kubescript`
