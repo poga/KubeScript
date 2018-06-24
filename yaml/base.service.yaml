@@ -4,7 +4,6 @@ kind: Service
 metadata:
   name: app
 spec:
-  type: LoadBalancer
   ports:
     - name: http-server
       port: 80
