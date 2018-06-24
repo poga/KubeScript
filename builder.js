@@ -117,8 +117,6 @@ Builder.prototype.run = async function (outPrefix, opts) {
 
   succeed(spinner)
 
-  if (opts.dryRun) return
-
   spinner = ora('Building app image...').start()
   // 2. build image
   await spawn('docker', ['build', '-t', appImageTag, '.'])
