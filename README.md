@@ -43,6 +43,8 @@ app.on('send_welcome_email', function (ctx) {
 app.run()
 ```
 
+For example, see `test-app.js`.
+
 ## Setup
 
 To start, you need the following tools installed on your computer:
