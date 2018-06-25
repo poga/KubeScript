@@ -29,3 +29,23 @@ tape('event', async function (t) {
   srv.close()
   t.end()
 })
+
+tape('exceptions', async function (t) {
+  t.plan(2)
+  const app = new Runner()
+
+  app.on('foo', async function (ctx) {
+    throw new Error('error!')
+  })
+
+  let srv = app.run()
+  try {
+    await request.post('http://localhost:3000/EVENT-foo')
+  } catch (e) {
+    t.same(e.statusCode, 500)
+    t.same(e.error, 'error!')
+  } finally {
+    srv.close()
+    t.end()
+  }
+})

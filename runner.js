@@ -65,6 +65,15 @@ Runner.prototype.run = function () {
   })
 
   app
+    .use(async(ctx, next) => {
+      try {
+        await next()
+      } catch (e) {
+        ctx.status = e.status || 500
+        ctx.body = e.message
+        ctx.app.emit('error', e, ctx)
+      }
+    })
     .use(cors())
     .use(logger())
     .use(bodyParser())
