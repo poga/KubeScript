@@ -1,9 +1,11 @@
 # KubeScript
 
+Everything is one `require` away.
+
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Kubescript is a web-app framework that helps you build scalable web application on kubernetes with plain JavaScript.
+KubeScript is a web application framework that helps you build scalable web application with plain JavaScript.
 
 `npm i kubescript`
 
