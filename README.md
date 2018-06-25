@@ -1,11 +1,11 @@
 # KubeScript
 
-Everything is one `require` away.
-
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 KubeScript is a web application framework that helps you build scalable web application with plain JavaScript.
+
+You can require microservices written in any langauge to your app, without all the hassle.
 
 `npm i kubescript`
 
