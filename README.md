@@ -80,7 +80,7 @@ You need to add settings to your `package.json`. Here's an example:
   "dependencies": {
     ...
   },
-  "kubescript": {
+  "KubeScript": {
     "prefix": "gcr.io/spacer-184617/",
     "dependencies": {
       "foobar": {
@@ -100,8 +100,8 @@ You need to add settings to your `package.json`. Here's an example:
 }
 ```
 
-* `kubescript.prefix`: The string to prepend to your application's docker image name. This is for pushing your image to the correct registry, such as [Google Container Registry](https://cloud.google.com/container-registry/).
-* `kubescript.dependencies`: The microservices your application depends on. The key is the corresponding docker image name. The value includes:
+* `KubeScript.prefix`: The string to prepend to your application's docker image name. This is for pushing your image to the correct registry, such as [Google Container Registry](https://cloud.google.com/container-registry/).
+* `KubeScript.dependencies`: The microservices your application depends on. The key is the corresponding docker image name. The value includes:
   * `version`: The version you want to use. KubeScript will look for image with specified version tag.
   * `ports`: The service's exposed port. KubeScript will try to find the `EXPOSE` port via inspecting the docker image by default.
 
@@ -135,6 +135,12 @@ Emit an event with given payload.
 If `KUBESCRIPT_PHASE` environment variable is set to `build`, it will start building your application.
 
 If not, start the application for runtime.
+
+## CLI
+
+##### Add a dependency
+
+`npx ks add foobar@1.2.3`
 
 ## License
 

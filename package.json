@@ -24,7 +24,7 @@
     "request-promise": "^4.2.2",
     "require-hacker": "^3.0.1"
   },
-  "kubescript": {
+  "KubeScript": {
     "prefix": "gcr.io/spacer-184617/",
     "dependencies": {
       "foobar": {

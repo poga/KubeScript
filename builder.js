@@ -81,7 +81,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   fs.writeFileSync(path.join(process.cwd(), 'Dockerfile'), dockerfile)
 
   // app pod
-  let imagePrefix = packageData.kubescript.prefix || ''
+  let imagePrefix = packageData.KubeScript.prefix || ''
   const appImageTag = `${imagePrefix}${packageData.name}:${packageData.version}`
 
   // setup app deployment
@@ -89,7 +89,7 @@ Builder.prototype.run = async function (outPrefix, opts) {
   appd.metadata.name = packageData.name
   appd.spec.selector = { matchLabels: { app: packageData.name } }
   appd.spec.template.metadata.labels.app = packageData.name
-  appd.spec.template.metadata.annotations = { builtAt: `${new Date()}`, builtWith: 'kubescript' }
+  appd.spec.template.metadata.annotations = { builtAt: `${new Date()}`, builtWith: 'KubeScript' }
   appd.spec.template.spec.containers[0].image = appImageTag
   appd.spec.template.spec.containers[0].name = packageData.name
   appd.spec.template.spec.containers[0].readinessProbe = {

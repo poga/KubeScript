@@ -16,7 +16,7 @@ function clear () {
 
 function register (specLock, packageData) {
   return requireHacker.global_hook(LOADER_NAME, path => {
-    let deps = _.get(packageData, 'kubescript.dependencies', {})
+    let deps = _.get(packageData, 'KubeScript.dependencies', {})
     if (!deps[path] && !path.startsWith(LOADER_PREFIX)) {
       return
     }
