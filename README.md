@@ -126,9 +126,9 @@ Routing is done with [koa-router](https://github.com/alexmingoia/koa-router).
 
 Subscribe to an event.
 
-##### `app.emit(event)`
+##### `app.emit(event, payload)`
 
-Emit an event.
+Emit an event with given payload.
 
 ##### `app.run()`
 
