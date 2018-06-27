@@ -3,9 +3,7 @@
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-KubeScript is a web application framework that helps you build scalable web application with plain JavaScript.
-
-You can require microservices written in any langauge to your app, without all the hassle.
+KubeScript is a web application framework that helps you build scalable web application with plain JavaScript, connect with microservices written in any language.
 
 `npm i kubescript`
 
@@ -49,7 +47,7 @@ app.on('send_welcome_email', function (ctx) {
 app.run()
 ```
 
-Building this application with `KUBESCRIPT_PHASE=build node index.js` will setup a service mesh, event gateway, and the microservices the app depends on, ready to be deployed to any kubernetes cluster.
+Deploy this application to kubernetes with `KUBESCRIPT_PHASE=build node index.js`. One command, everything is automated.
 
 For more example, see `test-app.js`.
 
