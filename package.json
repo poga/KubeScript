@@ -9,7 +9,7 @@
   "bin": { "ks": "./bin/ks.js" },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@koa/cors": "^2.2.1",
     "bluebird": "^3.5.1",
