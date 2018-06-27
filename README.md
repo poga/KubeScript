@@ -9,39 +9,30 @@ KubeScript is a web application framework that helps you build scalable web appl
 
 ![preview](./assets/cli.png)
 
+
 ## Synopsis
 
 ```javascript
-// index.js
 const App = require('kubescript')
+
 // require docker images directly
 const redisConfig = require('docker://redis')
 const redisClient = require('redis')
 
 let app = new App()
 
-// http endpoint
-app.get('/hello', function (ctx) {
-  ctx.body = 'world'
-})
+app.post('/register', function (ctx) {
+  let {host, port} = redisConfig
+  let c = redisClient.createClient({host, port})
 
-app.post('/foo', function (ctx) {
-  // connect to services created with the docker image
-  let c = redisClient.createClient({
-    host: redisConfig.host,
-    port: redisConfig.port
-  })
+  register(c)
 
+  app.emit('user.registered')
   ctx.body = 'bar'
 })
 
 // event emitting and handling
 app.on('user.registered', function (ctx) {
-  app.emit('send_welcome_email')
-})
-
-app.on('send_welcome_email', function (ctx) {
-  // send email
 })
 
 app.run()
@@ -50,6 +41,8 @@ app.run()
 Deploy this application to kubernetes with `KUBESCRIPT_PHASE=build node index.js`. One command, everything is automated.
 
 For more example, see `test-app.js`.
+
+
 
 ## Setup
 
@@ -64,6 +57,46 @@ You also need a working kubernetes cluster.
 **note**: When using GKE, you need to create a role first:
 
 `kubectl create clusterrolebinding cluster-admin-binding-$USER --clusterrole=cluster-admin --user=$(gcloud config get-value account)`.
+
+
+## CLI
+
+##### Add a dependency
+
+`npx ks add foobar@1.2.3`
+
+
+## API
+
+##### `new App()`
+
+```javascript
+const App = require('kubescript')
+let app = new App()
+```
+
+Create a new KubeScript application.
+
+##### `app.get(path, handler), app.post(path, handler), app.put(path, handler), app.delete(path, handler)`
+
+Create a HTTP endpoint for specified method. `handler` is a [koa](https://koajs.com/) handler.
+
+Routing is done with [koa-router](https://github.com/alexmingoia/koa-router).
+
+##### `app.on(event, handler)`
+
+Subscribe to an event.
+
+##### `app.emit(event, payload)`
+
+Emit an event with given payload.
+
+##### `app.run()`
+
+If `KUBESCRIPT_PHASE` environment variable is set to `build`, it will start building your application.
+
+If not, start the application for runtime.
+
 
 ## Config
 
@@ -103,42 +136,6 @@ You need to add settings to your `package.json`. Here's an example:
   * `version`: The version you want to use. KubeScript will look for image with specified version tag.
   * `ports`: The service's exposed port. KubeScript will try to find the `EXPOSE` port via inspecting the docker image by default.
 
-## API
-
-##### `new App()`
-
-```javascript
-const App = require('kubescript')
-let app = new App()
-```
-
-Create a new KubeScript application.
-
-##### `app.get(path, handler), app.post(path, handler), app.put(path, handler), app.delete(path, handler)`
-
-Create a HTTP endpoint for specified method. `handler` is a [koa](https://koajs.com/) handler.
-
-Routing is done with [koa-router](https://github.com/alexmingoia/koa-router).
-
-##### `app.on(event, handler)`
-
-Subscribe to an event.
-
-##### `app.emit(event, payload)`
-
-Emit an event with given payload.
-
-##### `app.run()`
-
-If `KUBESCRIPT_PHASE` environment variable is set to `build`, it will start building your application.
-
-If not, start the application for runtime.
-
-## CLI
-
-##### Add a dependency
-
-`npx ks add foobar@1.2.3`
 
 ## License
 
