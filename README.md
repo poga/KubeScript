@@ -31,7 +31,7 @@ app.post('/register', function (ctx) {
   ctx.body = 'bar'
 })
 
-// event emitting and handling
+// event handling
 app.on('user.registered', function (ctx) {
 })
 
@@ -49,10 +49,10 @@ For more example, see `test-app.js`.
 To start, you need the following tools installed on your computer:
 
 * docker
-* kubectl: only tested with 1.9.7
+* kubectl
 * [conduit](https://conduit.io/)
 
-You also need a working kubernetes cluster.
+You also need a working kubernetes cluster. Currently, only v1.9.7 is tested.
 
 **note**: When using GKE, you need to create a role first:
 
@@ -63,7 +63,9 @@ You also need a working kubernetes cluster.
 
 ##### Add a dependency
 
-`npx ks add foobar@1.2.3`
+```
+$ npx ks add foobar@1.2.3
+```
 
 
 ## API
