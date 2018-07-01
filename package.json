@@ -9,7 +9,7 @@
   "bin": {
     "ks": "./bin/ks.js"
   },
-  "keywords": [],
+  "keywords": ["kubernetes", "web", "framework"],
   "author": "",
   "license": "MIT",
   "dependencies": {
